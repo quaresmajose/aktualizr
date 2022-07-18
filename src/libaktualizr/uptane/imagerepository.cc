@@ -203,10 +203,13 @@ void ImageRepository::checkTargetsExpired() {
   }
 }
 
-void ImageRepository::updateMeta(INvStorage& storage, const IMetadataFetcher& fetcher) {
+void ImageRepository::updateRoot(INvStorage& storage, const IMetadataFetcher& fetcher) {
   resetMeta();
+  RepositoryCommon::updateRoot(storage, fetcher, RepositoryType::Image());
+}
 
-  updateRoot(storage, fetcher, RepositoryType::Image());
+void ImageRepository::updateMeta(INvStorage& storage, const IMetadataFetcher& fetcher) {
+  updateRoot(storage, fetcher);
 
   // Update Image repo Timestamp metadata
   {
