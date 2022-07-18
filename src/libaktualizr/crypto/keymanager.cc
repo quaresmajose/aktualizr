@@ -189,6 +189,24 @@ std::string KeyManager::getCN() const {
   return Crypto::extractSubjectCN(cert);
 }
 
+std::string KeyManager::getBC() const {
+  const std::string not_found_cert_message = "Certificate is not found, can't extract device_id";
+  std::string cert;
+  if (config_.tls_cert_source == CryptoSource::kFile) {
+    if (!backend_->loadTlsCert(&cert)) {
+      throw std::runtime_error(not_found_cert_message);
+    }
+  } else {  // CryptoSource::kPkcs11
+    if (!built_with_p11) {
+      throw std::runtime_error("Aktualizr was built without PKCS#11 support, can't extract device_id");
+    }
+    if (!(*p11_)->readTlsCert(config_.p11.tls_clientcert_id, &cert)) {
+      throw std::runtime_error(not_found_cert_message);
+    }
+  }
+  return Crypto::extractSubjectBC(cert);
+}
+
 void KeyManager::getCertInfo(std::string *subject, std::string *issuer, std::string *not_before,
                              std::string *not_after) const {
   std::string not_found_cert_message = "Certificate is not found, can't extract device certificate";
