@@ -6,6 +6,7 @@
 #include "libaktualizr/config.h"
 #include "logging/logging.h"
 #include "storage/invstorage.h"
+#include "storage/sql_utils.h"
 
 ReportQueue::ReportQueue(const Config& config_in, std::shared_ptr<HttpInterface> http_client,
                          std::shared_ptr<INvStorage> storage_in, int run_pause_s, int event_number_limit)
@@ -55,7 +56,16 @@ void ReportQueue::enqueue(std::unique_ptr<ReportEvent> event) {
 void ReportQueue::flushQueue() {
   int64_t max_id = 0;
   Json::Value report_array{Json::arrayValue};
-  storage->loadReportEvents(&report_array, &max_id, cur_event_number_limit_);
+  try {
+    storage->loadReportEvents(&report_array, &max_id, cur_event_number_limit_);
+  }  catch (const SQLException& exc) {
+    LOG_ERROR << "Failed to read events from DB: " << exc.what();
+    return;
+  } catch (const std::exception& exc) {
+    LOG_ERROR << "Unknown failure while reading events from DB: " << exc.what();
+    return;
+  }
+
 
   if (config.tls.server.empty()) {
     // Prevent a lot of unnecessary garbage output in uptane vector tests.
