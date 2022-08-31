@@ -58,14 +58,13 @@ void ReportQueue::flushQueue() {
   Json::Value report_array{Json::arrayValue};
   try {
     storage->loadReportEvents(&report_array, &max_id, cur_event_number_limit_);
-  }  catch (const SQLException& exc) {
+  } catch (const SQLException& exc) {
     LOG_ERROR << "Failed to read events from DB: " << exc.what();
     return;
   } catch (const std::exception& exc) {
     LOG_ERROR << "Unknown failure while reading events from DB: " << exc.what();
     return;
   }
-
 
   if (config.tls.server.empty()) {
     // Prevent a lot of unnecessary garbage output in uptane vector tests.
