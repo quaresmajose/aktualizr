@@ -27,7 +27,7 @@ KeyManager::KeyManager(std::shared_ptr<INvStorage> backend, KeyManagerConfig con
     : backend_(std::move(backend)), config_(std::move(config)) {
   if (built_with_p11) {
     if (!p11) {
-      p11_ = std::make_shared<P11EngineGuard>(config_.p11.module, config_.p11.pass);
+      p11_ = std::make_shared<P11EngineGuard>(config_.p11.module, config_.p11.pass, config_.p11.label);
     } else {
       p11_ = p11;
     }

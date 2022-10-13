@@ -28,6 +28,7 @@ struct PKCS11_slot_st;
 struct P11Config {
   boost::filesystem::path module;
   std::string pass;
+  std::string label;
   std::string uptane_key_id;
   std::string tls_cacert_id;
   std::string tls_pkey_id;
