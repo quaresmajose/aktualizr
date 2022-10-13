@@ -61,7 +61,11 @@ P11SlotsWrapper::~P11SlotsWrapper() {
 }
 
 P11Engine::P11Engine(boost::filesystem::path module_path, std::string pass, std::string label)
-    : module_path_(std::move(module_path)), pass_{std::move(pass)}, label_{std::move(label)}, ctx_(module_path_), wslots_(ctx_.get()) {
+    : module_path_(std::move(module_path)),
+      pass_{std::move(pass)},
+      label_{std::move(label)},
+      ctx_(module_path_),
+      wslots_(ctx_.get()) {
   if (module_path_.empty()) {
     return;
   }
@@ -151,11 +155,11 @@ PKCS11_SLOT* P11Engine::findTokenSlot() const {
 
   if (label_.empty()) {
     LOG_WARNING << "Token label missing. Using 1st initialized token.";
-	slot = PKCS11_find_token(ctx_.get(), wslots_.get_slots(), wslots_.get_nslots());
+    slot = PKCS11_find_token(ctx_.get(), wslots_.get_slots(), wslots_.get_nslots());
   } else {
     auto iterslot{wslots_.get_slots()};
     for (unsigned int i = 0; i < nslot; i++, iterslot++) {
-      if (iterslot != nullptr  && (tok = iterslot->token) != nullptr) {
+      if (iterslot != nullptr && (tok = iterslot->token) != nullptr) {
         if (label_ == tok->label) {
           slot = iterslot;
           break;
