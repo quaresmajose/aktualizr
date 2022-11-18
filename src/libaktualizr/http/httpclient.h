@@ -3,6 +3,7 @@
 
 #include <future>
 #include <memory>
+#include <set>
 
 #include <curl/curl.h>
 #include "gtest/gtest_prod.h"
@@ -25,7 +26,8 @@ class CurlGlobalInitWrapper {
 
 class HttpClient : public HttpInterface {
  public:
-  explicit HttpClient(const std::vector<std::string> *extra_headers = nullptr);
+  explicit HttpClient(const std::vector<std::string> *extra_headers = nullptr,
+                      const std::set<std::string> *response_header_names = nullptr);
   explicit HttpClient(const std::string &socket);
   HttpClient(const HttpClient &curl_in);  // non-default!
   ~HttpClient() override;
@@ -72,5 +74,6 @@ class HttpClient : public HttpInterface {
   }
   bool pkcs11_key{false};
   bool pkcs11_cert{false};
+  std::set<std::string> response_header_names_;
 };
 #endif
